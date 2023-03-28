@@ -89,6 +89,11 @@ def start_device_threads():
         device_thread = threading.Thread(target=module.start_device, args=(device_id, device_config))
         device_thread.start()
 
+# Function to start calculation thread
+def start_calculation_thread():
+    calculation_thread = threading.Thread(target=calculate_energy_allocations)
+    calculation_thread.start()
+
 # API route to get all device data
 @app.route('/api/devices', methods=['GET'])
 def get_devices():
@@ -106,9 +111,25 @@ def handle_device_data_update(data):
 def start_server():
     socketio.run(app, host='0.0.0.0', port=5000)
 
+def calculate_energy_allocations():
+    while True:
+        # Perform energy allocation calculations
+        # ...
+
+        # Update device data
+        # ...
+
+        # Emit updated data to clients
+        socketio.emit('device_data_update', {'device_id': device_id, 'data': data})
+
+        # Sleep for fixed frequency
+        time.sleep(1/frequency)
+
 if __name__ == 'main':
+    start_calculation_thread()
     start_device_threads()
     start_server()
 
+start_calculation_thread()
 start_device_threads()
 start_server()
